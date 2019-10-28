@@ -10,7 +10,7 @@ library(readr)
 library(assertr)
 library(tidyverse)
 library(janitor)
-
+library(magrittr)
 ```
 
 
@@ -128,7 +128,7 @@ The missing values in this dataset are 0 except for the insulin and pregnancies 
 ```{r missing_value}
 df <- diabetes %>% select(everything(),-pregnancies,-outcome,-insulin) %>% na_if(0)
 diabetes <- df %>% mutate(pregnancies=diabetes$pregnancies,outcome= diabetes$outcome,insulin=diabetes$insulin)
-diabetes <- diabetes %>% select(everything(),outcome)
+diabetes <- diabetes %>% select(outcome,everything())
 diabetes
 
 ```

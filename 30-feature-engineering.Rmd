@@ -1,15 +1,21 @@
 ---
 title: "30-feature-engineering"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
+```{r}
+library(magrittr)
+```
+
 ## Feature Engineering
 
 Sometimes discrete variables work better than continuous models for some machine learning models like random forest and clustering. 
 
-Keeping this in mind, two variables Insulin level and  will be categorised according to medical practice.
+Keeping this in mind, two variables Insulin level and  will be categorized according to medical practice.
 
 
-## Catagorize Insulin Level.
+## Categorize Insulin Level.
 
 This function will take in the whole data frame and check the the insulin level. If the insulin level is below 166 then it will return 0 otherwise 1 in a new column called "insulin_cat"
 
@@ -32,7 +38,7 @@ cat_insulin <- function(df)
 
 
 
-
+Now we test the function
 
 ```{r test_insulin_cat}
 test <-  diabetes %>% cat_insulin() %>% select(insulin,insulin_cat)
@@ -40,19 +46,19 @@ test %>% filter(insulin>=166) %>% nrow
 
 sum(test$insulin_cat)
 
-
+test %>% assert(in_set(c(0,1)),insulin_cat)
 
 ```
 The number of times insulin_cat gives 1 is equal to number of times insulin level is greater than 166.
 
-So the function is working.
+So the function is working.Also assert says it is in set of 0,1.
 
 
 
-## Catagorize BMI
-Now we categorise BMI.
+## Categorize BMI
+Now we categories BMI.
 
-BMI can be underweight, healthy, overweight and obese accrodin to their respective BMI.
+BMI can be underweight, healthy, overweight and obese according to their respective BMI.
 
 
 The function will take in the whole data frame and give a new column called bmi_cat using the last. The output will be like below.
@@ -68,7 +74,7 @@ BMI      | Category   |Function Output
 
 ```{r bmi_cat}
 
-bmi_cat <- function(df){
+cat_bmi <- function(df){
 df%>% 
   mutate(bmi,bmi_cat=cut(bmi,breaks=c(0, 18.5, 24.9, 30,Inf), 
                    labels=c(0,1,2,3))) %>% 
@@ -76,52 +82,15 @@ df%>%
   }
 
 ```
-
+Note there will be some NA in the bmi_cat column as there was bmi.
 
 
 ```{r test_bmi_cat}
 x <- c(0,1,2,3)
-diabetes %>% bmi_cat %>% assert(in_set(x),bmi_cat)
+diabetes %>% cat_bmi %>% assert(in_set(x),bmi_cat)
 
 ```
 
 The assert shows all the values are well within range.
 The function is working.
-
-
-## Stadardize Age
-Lets's standardize the age. Not having NA would not change anthing as there is no NA in 
-
-```{r standardize}
-scale2 <- function(x,na.rm=FALSE )(x-mean(x,na.rm=na.rm))/sd(x,na.rm=na.rm)
-std_age <- function(df)
-{df%>% 
-  mutate_at(c("age"),list(age_std=scale)) 
-}
-
-diabetes %>% std_age()
-
-
-```
-
-## Detecting Early Marriage
-
-If a woman has 2 or more pregnancy before 23. We can classify it as early marriage.
-
-
-```{r early_not}
-
-early2 <- function(x)ifelse(x$age<23&x$pregnancies>2,"Early","Not Early")
-diabetes$early <- diabetes %>% early2
-
-
-early_marriage <- function(df){
-  
-  df%>% 
-  mutate_at(c("age","pregnancies"),list(insulin_cat=function(x,y)ifelse(x<23&y>2,"Early","Not Early"))) 
-  
-}
-
-df %>% early_marriage()
-```
 

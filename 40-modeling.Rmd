@@ -4,4 +4,18 @@ output: html_notebook
 ---
 
 
-The data will be split using 
+In this section we will me applying the features to the data also selecting features in or out according to our necessity.
+
+```{r loading_data_apply_feature_assert}
+df <- diabetes %>% 
+  cat_insulin %>%  ## categorise insulin
+   assert(in_set(c(0,1)),insulin_cat) %>% ## Assert the cat_insulin function
+  cat_bmi %>%
+  assert(in_set(c(0,1,2,3)),bmi_cat) %>% # assert cat_bmi function
+  select(outcome, everything())
+
+df
+```
+
+
+
