@@ -1,0 +1,135 @@
+---
+title: "10-import"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r libraries}
+library(readr)
+library(assertr)
+library(tidyverse)
+library(janitor)
+
+```
+
+
+## Introduction
+
+This dataset is originally from the National Institute of Diabetes and Digestive and Kidney Diseases. The objective of the dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. Several constraints were placed on the selection of these instances from a larger database. In particular, all patients here are females at least 21 years old of Pima Indian heritage.
+
+This dataset is licencsed under CC0:Public Domain.
+
+
+## Import Dataset
+
+This is a "CSV" format dataset.
+
+```{r}
+diabetes <- read_csv("diabetes.csv")
+```
+
+## Checking the Values
+
+First the names and the dimensions
+
+```{r names&dim}
+names(diabetes)
+dim(diabetes)
+```
+
+The names of the columns are pretty clean.Some names are multiple words.
+
+```{r clean_name}
+diabetes <- clean_names(diabetes)
+names(diabetes)
+```
+
+The words are seperated by dash after cleaning. 
+
+
+
+Now lets check if there is NA.
+
+```{r check_NA}
+sum(is.na(diabetes))>0
+
+
+```
+
+
+There is no NA in the data.
+
+
+## Check the values(Assert)
+
+
+According to the dataset the minimum age of the woman is 21. Let's see if it is true in the dataset.
+
+```{r assert_age}
+diabetes %>%
+  assert(within_bounds(21,100),age)
+```
+
+Assert returns no error. So the age of the women are above 21 and below 100.
+
+### Other Columns
+
+
+### Blood Pressure
+
+Averge Blood Pressure for woman of 21 year of age is above 80mm Hg. 30mm Hg means very low blood pressure.
+
+```{r pressure_check}
+diabetes %>% 
+  assert(within_bounds(30,Inf),blood_pressure)
+```
+There are 5 rows with 0 in blood pressure column. But blood pressure cannot be zero. So these must be NAs.
+
+### Glucose
+The glucose level are plasma glucose concentration.
+
+They can get as low as 30.
+
+```{r glucose_check}
+diabetes %>% 
+  assert(within_bounds(30,Inf), glucose)
+```
+
+Glucose Columns have NA too which are the 0 values.
+
+Skin thickness and BMI has wide range. Let's check if there are any 0 in it.
+
+```{r bmi_skinT_check}
+sum(diabetes$skin_thickness == 0) > 0
+sum(diabetes$bmi == 0) > 0
+```
+
+So skin thickness and and BMI both have 0 values.
+
+
+The same test will not be conducted for Insulin column. Because if a person does not have diabetes that person does not need insulin.So the insulin having value 0 is valid.
+
+
+
+The outcome column can only have 0 or 1. It signifies if a person have diabetes or not.
+
+```{r outcome_check}
+diabetes %>% assert(in_set(c(0,1)),outcome)
+```
+
+So the values are 0 or 1 which is correct.
+
+# Recoding the missing values
+
+The missing values in this dataset are 0 except for the insulin and pregnancies column.
+
+
+```{r missing_value}
+df <- diabetes %>% select(everything(),-pregnancies,-outcome,-insulin) %>% na_if(0)
+diabetes <- df %>% mutate(pregnancies=diabetes$pregnancies,outcome= diabetes$outcome,insulin=diabetes$insulin)
+diabetes <- diabetes %>% select(everything(),outcome)
+diabetes
+
+```
+In this project we are going to use machine learning to predict chances of a pima Indian woman having diabetes.
