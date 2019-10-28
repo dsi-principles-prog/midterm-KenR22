@@ -4,9 +4,7 @@ output:
   html_document:
     df_print: paged
 ---
-```{r}
-library(magrittr)
-```
+
 
 ## Feature Engineering
 
