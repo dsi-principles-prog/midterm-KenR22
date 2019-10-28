@@ -17,5 +17,7 @@ df <- diabetes %>%
 df
 ```
 
+"outcome" variable is the target variable and rest are features.
+
 
 
