@@ -11,7 +11,9 @@ df <- diabetes %>%
   cat_insulin %>%  ## categorise insulin
    assert(in_set(c(0,1)),insulin_cat) %>% ## Assert the cat_insulin function
   cat_bmi %>%
-  assert(in_set(c(0,1,2,3)),bmi_cat) %>% # assert cat_bmi function
+  assert(in_set(c(0,1,2,3)),bmi_cat) %>%
+  early_marriage %>% 
+  assert(in_set(0,1),early_marriage) %>%   # assert cat_bmi function
   select(outcome, everything())
 
 df

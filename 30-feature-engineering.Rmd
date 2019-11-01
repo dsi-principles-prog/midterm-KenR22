@@ -92,3 +92,18 @@ diabetes %>% cat_bmi %>% assert(in_set(x),bmi_cat)
 The assert shows all the values are well within range.
 The function is working.
 
+------------------------------------
+#Function added
+# Categorize early marriage
+```{r}
+early_marriage<-function(df){
+  df %>% 
+    mutate(early_marriage= if_else((age<23)& pregnancies>=2,1,0)  )
+}
+```
+    
+# Testing the function                                                                                              
+```{r}
+diabetes %>% early_marriage %>% select(age,pregnancies,early_marriage) %>% assert(in_set(0,1),early_marriage)
+```
+
